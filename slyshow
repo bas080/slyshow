@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+# author:  Bas Huis
+# website: https://github.com/bas080/slyshow
+# created: Sun Mar  8 03:06:29 CET 2020
+# changed: Sun Mar  8 03:01:22 CET 2020
+# license: GNU General Public License 3.0
+
+LINES=$(tput lines)
+COLUMNS=$(tput cols)
+BOLD=$(tput bold)
+NORMAL=$(tput sgr0)
+
+slyshow() {
+  local space="$((($LINES - 10) / 2))"
+  local line_n
+
+  for filepath in "$@"; do
+    line_n=0
+    test -e "$filepath" || {
+      >&2 printf "%s does not exist." "$filepath"
+      continue
+    }
+    {
+      while read -r line; do
+        [ -z "$line" ] && continue # ignore empty lines
+        [ $line_n -eq 4 ] && break # stop after 4th line
+
+        if [[ $line_n -eq 0 ]]; then
+          printf "%s%*s%s%s\n\n" \
+            "$BOLD" \
+            "$(((${#line}+$COLUMNS)/2))" \
+            "$line" \
+            "$NORMAL"
+        else
+          printf "%*s\n\n" "$(((${#line}+$COLUMNS)/2))" "$line"
+        fi
+
+        line_n=$(($line_n + 1))
+      done < "$filepath"
+      eval "printf '\n%.0s' {1..$space}"
+    } | less -R
+  done
+}
+
+slyshow "$@"
