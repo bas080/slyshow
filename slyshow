@@ -6,39 +6,54 @@
 # changed: Sun Mar  8 03:01:22 CET 2020
 # license: GNU General Public License 3.0
 
+set -Eeuo pipefail
+
 LINES=$(tput lines)
 COLUMNS=$(tput cols)
 BOLD=$(tput bold)
 NORMAL=$(tput sgr0)
 
 slyshow() {
-  local space="$((($LINES - 10) / 2))"
+  local bottom_padding="$((($LINES - 10) / 2))"
   local line_n
+  local clean;
+  local offset;
 
-  for filepath in "$@"; do
+  for file_path in "$@"; do
     line_n=0
-    test -e "$filepath" || {
-      >&2 printf "%s does not exist." "$filepath"
+
+    test -e "$file_path" || {
+      >&2 printf "%s does not exist.\n" "$file_path"
       continue
     }
+
     {
       while read -r line; do
         [ -z "$line" ] && continue # ignore empty lines
         [ $line_n -eq 4 ] && break # stop after 4th line
 
+        # Remove the ANSI formatting characters for calculating the center.
+        clean="$(perl -pe 's/\x1b\[[0-9;]*[mG]//g' <<< "$line")"
+        offset="$((($COLUMNS-${#clean})/2))"
+
+        # Print the spaces in order to center line
+        printf "%${offset}s"
+
+        # Have the first line be printed in bold always?
         if [[ $line_n -eq 0 ]]; then
-          printf "%s%*s%s%s\n\n" \
+          printf "%s%s%s\n\n" \
             "$BOLD" \
-            "$(((${#line}+$COLUMNS)/2))" \
             "$line" \
             "$NORMAL"
         else
-          printf "%*s\n\n" "$(((${#line}+$COLUMNS)/2))" "$line"
+          printf "%s\n\n" "$line"
         fi
 
         line_n=$(($line_n + 1))
-      done < "$filepath"
-      eval "printf '\n%.0s' {1..$space}"
+      done < "$file_path"
+
+      # Print the padding at the bottom so it renders in the center in less.
+      eval "printf '\n%.0s' {1..$bottom_padding}"
     } | less -R
   done
 }
