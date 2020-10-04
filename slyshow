@@ -29,8 +29,8 @@ slyshow() {
 
     {
       while read -r line; do
-        [ -z "$line" ] && continue # ignore empty lines
-        [ $line_n -eq 4 ] && break # stop after 4th line
+        [ -z "$line" ] && continue # Ignore empty lines.
+        [ $line_n -eq 4 ] && break # Stop after fourth line.
 
         # Remove the ANSI formatting characters for calculating the center.
         clean="$(perl -pe 's/\x1b\[[0-9;]*[mG]//g' <<< "$line")"

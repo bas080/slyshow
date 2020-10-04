@@ -1,6 +1,6 @@
 # Slyshow
 
-> `$ slyshow file[file...]`
+> `$ slyshow file...`
 
 Simple bash tool and script for creating a minimal slideshow.
 It will only allow you to show 4 lines of centered text.
@@ -20,12 +20,21 @@ Video](https://img.youtube.com/vi/Unzc731iCUY/0.jpg)][1]
 ## Requirements
 
 Requires **bash** because it is written for it, Perl for stripping ANSI
-formatting, **less** for displaying the generated text in and **tput** to
+formatting, **less** for displaying the generated text and **tput** to
 determine width, height, bold and normal text.
 
 These tools tend to be installed on Linux systems by default.
 
-[1]:https://www.youtube.com/watch?v=Unzc731iCUY
+## Installation
+
+Place the slyshow file in a directory that is on your PATH and make sure it is
+executable.
+
+## Usage
+
+```sh
+slyshow ./README.md
+```
 
 ## Known Issues
 
@@ -34,4 +43,7 @@ These tools tend to be installed on Linux systems by default.
 - No help page.
 
 ## License
+
 GNU General Public License 3.0
+
+[1]:https://www.youtube.com/watch?v=Unzc731iCUY
